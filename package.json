@@ -1,0 +1,26 @@
+{
+  "name": "github_apitests",
+  "version": "1.0.0",
+  "description": "API Tests automation framework for githubAPI",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OlexBulai/Github_apiTests.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/OlexBulai/Github_apiTests/issues"
+  },
+  "homepage": "https://github.com/OlexBulai/Github_apiTests#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@types/node": "^25.6.0"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2"
+  }
+}
