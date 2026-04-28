@@ -1,18 +1,19 @@
-import { test as base, request } from "@playwright/test";
 import { test, expect } from "@playwright/test";
 
-test.describe("All crud", () => {
+test.describe("GitHub Repository CRUD API tests", () => {
   let arr: string[] = [];
   let repoName: string = "";
+
+  const headersObject = {
+    Authorization: process.env.TOKEN!,
+    Accept: "application/vnd.github+json",
+    "Content-Type": "application/json",
+  };
   test.beforeEach("Creating a new repository", async ({ request }) => {
     const endpoint = "https://api.github.com/user/repos";
     repoName = "test-api-repo-" + Date.now();
     await request.post(endpoint, {
-      headers: {
-        Authorization: process.env.TOKEN!,
-        Accept: "application/vnd.github+json",
-        "Content-Type": "application/json",
-      },
+      headers: headersObject,
 
       data: {
         name: repoName,
@@ -28,10 +29,7 @@ test.describe("All crud", () => {
   test("Get all repos from corent user", async ({ request }) => {
     const endpoint = "https://api.github.com/user/repos";
     const response = await request.get(endpoint, {
-      headers: {
-        Authorization: process.env.TOKEN!,
-        Accept: "application/vnd.github+json",
-      },
+      headers: headersObject,
     });
 
     expect(response.status()).toBe(200);
@@ -49,11 +47,7 @@ test.describe("All crud", () => {
     const endpoint = "https://api.github.com/user/repos";
     const newRepoName = "test-api-repo-" + Date.now();
     const response = await request.post(endpoint, {
-      headers: {
-        Authorization: process.env.TOKEN!,
-        Accept: "application/vnd.github+json",
-        "Content-Type": "application/json",
-      },
+      headers: headersObject,
 
       data: {
         name: newRepoName,
@@ -69,21 +63,17 @@ test.describe("All crud", () => {
     const responseBody = await response.json();
 
     expect(responseBody.id).toBeDefined();
-    expect(responseBody.name).toContain("test-api-repo");
-    expect(responseBody.full_name).toContain("/");
+    expect(responseBody.name).toBe(newRepoName);
+    expect(responseBody.full_name).toContain("/" + newRepoName);
     expect(responseBody.private).toBe(false);
   });
 
-  test("Adding a new file to a repository via PUT /repos/OlexBulai/test-api-repo/contents/tesst.txt", async ({
+  test(`Adding a new file to a repository via PUT /repos/OlexBulai/${repoName}/contents/tesst.txt`, async ({
     request,
   }) => {
     const endpoint = `https://api.github.com/repos/OlexBulai/${repoName}/contents/tesst.txt`;
     const response = await request.put(endpoint, {
-      headers: {
-        Authorization: process.env.TOKEN!,
-        Accept: "application/vnd.github+json",
-        "Content-Type": "application/json",
-      },
+      headers: headersObject,
       data: {
         message: "Update test file",
         content: "SGVsbG8gZnJvbSBQb3N0bWFuIQ==",
@@ -97,15 +87,13 @@ test.describe("All crud", () => {
     expect(responseBody.content.name).toContain("tesst.txt");
   });
 
-  test("Changing a repository name via PATCH /repos/OlexBulai/updated-api-repo123", async ({
+  test(`Changing a repository name via PATCH /repos/OlexBulai/${repoName}`, async ({
     request,
   }) => {
     const newRepoName = "updated-api-repo-" + Date.now();
     const endpoint = `https://api.github.com/repos/OlexBulai/${repoName}`;
     const response = await request.patch(endpoint, {
-      headers: {
-        Authorization: process.env.TOKEN!,
-      },
+      headers: headersObject,
       data: {
         name: newRepoName,
         description: "Repository renamed from Postman",
@@ -122,19 +110,13 @@ test.describe("All crud", () => {
     expect(responseBody.private).toBe(false);
   });
 
-  test("Deleting a repository via DELETE /repos/OlexBulai/${repoName}", async ({
+  test(`Deleting a repository via DELETE /repos/OlexBulai/${repoName}`, async ({
     request,
   }) => {
     const endpoint = `https://api.github.com/repos/OlexBulai/${repoName}`;
     const response = await request.delete(endpoint, {
-      headers: {
-        Authorization: process.env.TOKEN!,
-        Accept: "application/vnd.github+json",
-        "Content-Type": "application/json",
-      },
+      headers: headersObject,
     });
-    console.log("DELETE STATUS:", response.status());
-    console.log("DELETE BODY:", await response.text());
 
     expect(response.status()).toBe(204);
   });
@@ -142,9 +124,7 @@ test.describe("All crud", () => {
     for (const name of arr) {
       const endpoint = `https://api.github.com/repos/OlexBulai/${name}`;
       await request.delete(endpoint, {
-        headers: {
-          Authorization: process.env.TOKEN!,
-        },
+        headers: headersObject,
       });
     }
   });
