@@ -87,22 +87,29 @@ test.describe("GitHub Repository CRUD API tests", () => {
     expect(responseBody.content.name).toContain("tesst.txt");
   });
 
-  test(`Changing a repository name via PATCH /repos/OlexBulai/${repoName}`, async ({
-    request,
-  }) => {
+  test("Changing a repository name via PATCH", async ({ request }) => {
     const newRepoName = "updated-api-repo-" + Date.now();
+
     const endpoint = `https://api.github.com/repos/OlexBulai/${repoName}`;
+
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
     const response = await request.patch(endpoint, {
       headers: headersObject,
       data: {
         name: newRepoName,
-        description: "Repository renamed from Postman",
+        description: "Repository renamed from Playwright",
       },
     });
-    arr.push(newRepoName);
-    expect(response.status()).toBe(200);
 
     const responseBody = await response.json();
+
+    console.log("PATCH STATUS:", response.status());
+    console.log("PATCH BODY:", responseBody);
+
+    expect(response.status()).toBe(200);
+
+    arr.push(newRepoName);
 
     expect(responseBody.id).toBeDefined();
     expect(responseBody.name).toBe(newRepoName);
