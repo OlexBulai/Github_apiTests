@@ -1,19 +1,15 @@
 import { test, expect } from "@playwright/test";
+import { GitHubApiHelper } from "../src/helpers/header-api-helper";
 
 test.describe("GitHub Repository CRUD API tests", () => {
   let arr: string[] = [];
   let repoName: string = "";
 
-  const headersObject = {
-    Authorization: process.env.TOKEN!,
-    Accept: "application/vnd.github+json",
-    "Content-Type": "application/json",
-  };
   test.beforeEach("Creating a new repository", async ({ request }) => {
     const endpoint = "https://api.github.com/user/repos";
     repoName = "test-api-repo-" + Date.now();
     await request.post(endpoint, {
-      headers: headersObject,
+      headers: GitHubApiHelper.getHeaders(),
 
       data: {
         name: repoName,
@@ -29,7 +25,7 @@ test.describe("GitHub Repository CRUD API tests", () => {
   test("Get all repos from corent user", async ({ request }) => {
     const endpoint = "https://api.github.com/user/repos";
     const response = await request.get(endpoint, {
-      headers: headersObject,
+      headers: GitHubApiHelper.getHeaders(),
     });
 
     expect(response.status()).toBe(200);
@@ -47,7 +43,7 @@ test.describe("GitHub Repository CRUD API tests", () => {
     const endpoint = "https://api.github.com/user/repos";
     const newRepoName = "test-api-repo-" + Date.now();
     const response = await request.post(endpoint, {
-      headers: headersObject,
+      headers: GitHubApiHelper.getHeaders(),
 
       data: {
         name: newRepoName,
@@ -73,7 +69,7 @@ test.describe("GitHub Repository CRUD API tests", () => {
   }) => {
     const endpoint = `https://api.github.com/repos/OlexBulai/${repoName}/contents/tesst.txt`;
     const response = await request.put(endpoint, {
-      headers: headersObject,
+      headers: GitHubApiHelper.getHeaders(),
       data: {
         message: "Update test file",
         content: "SGVsbG8gZnJvbSBQb3N0bWFuIQ==",
@@ -95,7 +91,7 @@ test.describe("GitHub Repository CRUD API tests", () => {
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
     const response = await request.patch(endpoint, {
-      headers: headersObject,
+      headers: GitHubApiHelper.getHeaders(),
       data: {
         name: newRepoName,
         description: "Repository renamed from Playwright",
@@ -122,7 +118,7 @@ test.describe("GitHub Repository CRUD API tests", () => {
   }) => {
     const endpoint = `https://api.github.com/repos/OlexBulai/${repoName}`;
     const response = await request.delete(endpoint, {
-      headers: headersObject,
+      headers: GitHubApiHelper.getHeaders(),
     });
 
     expect(response.status()).toBe(204);
@@ -131,7 +127,7 @@ test.describe("GitHub Repository CRUD API tests", () => {
     for (const name of arr) {
       const endpoint = `https://api.github.com/repos/OlexBulai/${name}`;
       await request.delete(endpoint, {
-        headers: headersObject,
+        headers: GitHubApiHelper.getHeaders(),
       });
     }
   });
