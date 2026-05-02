@@ -1,4 +1,4 @@
-export class GitHubApiHelper {
+export default class HeadersApiHelper {
   static getHeaders() {
     return {
       Authorization: process.env.TOKEN!,
