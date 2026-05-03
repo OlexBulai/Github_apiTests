@@ -50,12 +50,7 @@ test.describe("GitHub Repository CRUD API tests", () => {
   test("Creater repo via POST /user/repos", async ({ request }) => {
     const newRepoName = "test-api-repo-" + Date.now();
 
-    const response = await reposHelper.createRepo(
-      request,
-      newRepoName,
-      "nikita",
-      true,
-    );
+    const response = await reposHelper.createRepo(request, newRepoName);
 
     arr.push(newRepoName);
 

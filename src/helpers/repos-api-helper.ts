@@ -1,10 +1,27 @@
 import HeadersApiHelper from "./header-api-helper";
 
 export default class ReposApiHelper {
-  private description: string = "Repository created from Playwright";
+  private description: string;
+  private privacy: boolean;
+  private auto_init: boolean;
+  private message: string;
+  private content: string;
+  private branch: string;
 
-  constructor(description: string) {
+  constructor(
+    description: string = "Repository created from Playwright",
+    privacy: boolean = false,
+    auto_init: boolean = true,
+    message: string = "Update test file",
+    content: string = "SGVsbG8gZnJvbSBQb3N0bWFuIQ==",
+    branch: string = "main",
+  ) {
     this.description = description;
+    this.privacy = privacy;
+    this.auto_init = auto_init;
+    this.message = message;
+    this.content = content;
+    this.branch = branch;
   }
   async getUserRepos(request: any) {
     const endpoint = "https://api.github.com/user/repos";
@@ -20,8 +37,8 @@ export default class ReposApiHelper {
     request: any,
     repoName: string,
     description: string = this.description,
-    privacy: boolean = false,
-    auto_init: boolean = true,
+    privacy: boolean = this.privacy,
+    auto_init: boolean = this.auto_init,
   ) {
     const endpoint = "https://api.github.com/user/repos";
 
@@ -42,7 +59,9 @@ export default class ReposApiHelper {
     request: any,
     ownerName: string,
     repoName: string,
-    message: string = "Update test file",
+    message: string = this.message,
+    content: string = this.content,
+    branch: string = this.branch,
   ) {
     const endpoint = `https://api.github.com/repos/${ownerName}/${repoName}/contents/tesst.txt`;
 
@@ -50,8 +69,8 @@ export default class ReposApiHelper {
       headers: HeadersApiHelper.getHeaders(),
       data: {
         message: message,
-        content: "SGVsbG8gZnJvbSBQb3N0bWFuIQ==",
-        branch: "main",
+        content: content,
+        branch: branch,
       },
     });
 
@@ -63,7 +82,7 @@ export default class ReposApiHelper {
     ownerName: string,
     repoName: string,
     newRepoName: string,
-    description: string = "Repository created from Playwright",
+    description: string = this.description,
   ) {
     const endpoint = `https://api.github.com/repos/${ownerName}/${repoName}`;
     const response = await request.patch(endpoint, {
