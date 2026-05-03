@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import HeadersApiHelper from "../src/helpers/header-api-helper";
+
 import ReposApiHelper from "../src/helpers/repos-api-helper";
 
 test.describe("GitHub Repository CRUD API tests", () => {
