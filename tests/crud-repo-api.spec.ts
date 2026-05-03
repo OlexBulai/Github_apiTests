@@ -10,21 +10,9 @@ test.describe("GitHub Repository CRUD API tests", () => {
   const reposHelper = new ReposApiHelper();
 
   test.beforeEach("Creating a new repository", async ({ request }) => {
-    const endpoint = "https://api.github.com/user/repos";
     repoName = "test-api-repo-" + Date.now();
 
-    const response = await request.post(endpoint, {
-      headers: HeadersApiHelper.getHeaders(),
-
-      data: {
-        name: repoName,
-        description: "Repository created from Playwright",
-        private: false,
-        auto_init: true,
-      },
-    });
-
-    console.log("TOKEN:", process.env.TOKEN);
+    const response = await reposHelper.createRepo(request, repoName);
 
     const responseBody = await response.json();
     ownerName = responseBody.owner.login;
