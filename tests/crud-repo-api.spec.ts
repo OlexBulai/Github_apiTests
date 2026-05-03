@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../src/fixtures/api-fixture";
 
 import ReposApiHelper from "../src/helpers/repos-api-helper";
 
@@ -9,10 +9,10 @@ test.describe("GitHub Repository CRUD API tests", () => {
   let ownerName: string = "";
   const reposHelper = new ReposApiHelper();
 
-  test.beforeEach("Creating a new repository", async ({ request }) => {
+  test.beforeEach("Creating a new repository", async ({ apiRequest }) => {
     repoName = "test-api-repo-" + Date.now();
 
-    const response = await reposHelper.createRepo(request, repoName);
+    const response = await reposHelper.createRepo(apiRequest, repoName);
 
     const responseBody = await response.json();
     ownerName = responseBody.owner.login;
@@ -20,8 +20,8 @@ test.describe("GitHub Repository CRUD API tests", () => {
     arr.push(repoName);
   });
 
-  test("Get all repos from corent user", async ({ request }) => {
-    const response = await reposHelper.getUserRepos(request);
+  test("Get all repos from corent user", async ({ apiRequest }) => {
+    const response = await reposHelper.getUserRepos(apiRequest);
 
     expect(response.status()).toBe(200);
 
@@ -35,10 +35,10 @@ test.describe("GitHub Repository CRUD API tests", () => {
     }
   });
 
-  test("Creater repo via POST /user/repos", async ({ request }) => {
+  test("Creater repo via POST /user/repos", async ({ apiRequest }) => {
     const newRepoName = "test-api-repo-" + Date.now();
 
-    const response = await reposHelper.createRepo(request, newRepoName);
+    const response = await reposHelper.createRepo(apiRequest, newRepoName);
 
     arr.push(newRepoName);
 
@@ -53,10 +53,10 @@ test.describe("GitHub Repository CRUD API tests", () => {
   });
 
   test(`Adding a new file to a repository via PUT /repos/${ownerName}/${repoName}/contents/tesst.txt`, async ({
-    request,
+    apiRequest,
   }) => {
     const response = await reposHelper.addFileToRepo(
-      request,
+      apiRequest,
       ownerName,
       repoName,
     );
@@ -67,21 +67,18 @@ test.describe("GitHub Repository CRUD API tests", () => {
     expect(responseBody.content.name).toContain("tesst.txt");
   });
 
-  test("Changing a repository name via PATCH", async ({ request }) => {
+  test("Changing a repository name via PATCH", async ({ apiRequest }) => {
     const newRepoName = "updated-api-repo-" + Date.now();
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
     const response = await reposHelper.updateRepoName(
-      request,
+      apiRequest,
       ownerName,
       repoName,
       newRepoName,
     );
 
     const responseBody = await response.json();
-
-    console.log("PATCH STATUS:", response.status());
-    console.log("PATCH BODY:", responseBody);
 
     expect(response.status()).toBe(200);
 
@@ -94,15 +91,19 @@ test.describe("GitHub Repository CRUD API tests", () => {
   });
 
   test(`Deleting a repository via DELETE /repos/${ownerName}/${repoName}`, async ({
-    request,
+    apiRequest,
   }) => {
-    const response = await reposHelper.deleteRepo(request, ownerName, repoName);
+    const response = await reposHelper.deleteRepo(
+      apiRequest,
+      ownerName,
+      repoName,
+    );
 
     expect(response.status()).toBe(204);
   });
-  test.afterAll("Clean-up", async ({ request }) => {
+  test.afterAll("Clean-up", async ({ apiRequest }) => {
     for (const name of arr) {
-      await reposHelper.deleteRepo(request, ownerName, name);
+      await reposHelper.deleteRepo(apiRequest, ownerName, name);
     }
   });
 });

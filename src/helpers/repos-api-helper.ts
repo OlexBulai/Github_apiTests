@@ -1,5 +1,3 @@
-import HeadersApiHelper from "./header-api-helper";
-
 export default class ReposApiHelper {
   private description: string;
   private privacy: boolean;
@@ -24,11 +22,9 @@ export default class ReposApiHelper {
     this.branch = branch;
   }
   async getUserRepos(request: any) {
-    const endpoint = "https://api.github.com/user/repos";
+    const endpoint = "/user/repos";
 
-    const response = await request.get(endpoint, {
-      headers: HeadersApiHelper.getHeaders(),
-    });
+    const response = await request.get(endpoint);
 
     return response;
   }
@@ -40,10 +36,9 @@ export default class ReposApiHelper {
     privacy: boolean = this.privacy,
     auto_init: boolean = this.auto_init,
   ) {
-    const endpoint = "https://api.github.com/user/repos";
+    const endpoint = "/user/repos";
 
     const response = await request.post(endpoint, {
-      headers: HeadersApiHelper.getHeaders(),
       data: {
         name: repoName,
         description: description,
@@ -66,7 +61,6 @@ export default class ReposApiHelper {
     const endpoint = `https://api.github.com/repos/${ownerName}/${repoName}/contents/tesst.txt`;
 
     const response = await request.put(endpoint, {
-      headers: HeadersApiHelper.getHeaders(),
       data: {
         message: message,
         content: content,
@@ -86,7 +80,6 @@ export default class ReposApiHelper {
   ) {
     const endpoint = `https://api.github.com/repos/${ownerName}/${repoName}`;
     const response = await request.patch(endpoint, {
-      headers: HeadersApiHelper.getHeaders(),
       data: {
         name: newRepoName,
         description: description,
@@ -97,9 +90,7 @@ export default class ReposApiHelper {
 
   async deleteRepo(request: any, ownerName: string, repoName: string) {
     const endpoint = `https://api.github.com/repos/${ownerName}/${repoName}`;
-    const response = await request.delete(endpoint, {
-      headers: HeadersApiHelper.getHeaders(),
-    });
+    const response = await request.delete(endpoint);
     return response;
   }
 }
