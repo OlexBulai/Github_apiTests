@@ -93,4 +93,17 @@ export default class ReposApiHelper {
     const response = await request.delete(endpoint);
     return response;
   }
+
+  async getRepoByName(request: any, ownerName: string, repoName: string) {
+    const endpoint = `/repos/${ownerName}/${repoName}`;
+    return await request.get(endpoint);
+  }
+
+  async getFileFromRepo(request: any, ownerName: string, repoName: string) {
+    const endpoint = `/repos/${ownerName}/${repoName}/contents/tesst.txt`;
+
+    const response = await request.get(endpoint);
+
+    return response;
+  }
 }

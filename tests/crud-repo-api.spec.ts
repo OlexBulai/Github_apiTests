@@ -5,17 +5,41 @@ import ReposApiHelper from "../src/helpers/repos-api-helper";
 test.describe("GitHub Repository CRUD API tests", () => {
   let arr: string[] = [];
   let repoName: string = "";
-
   let ownerName: string = "";
+
   const reposHelper = new ReposApiHelper();
 
   test.beforeEach("Creating a new repository", async ({ apiRequest }) => {
     repoName = "test-api-repo-" + Date.now();
 
-    const response = await reposHelper.createRepo(apiRequest, repoName);
+    const createResponse = await reposHelper.createRepo(apiRequest, repoName);
 
-    const responseBody = await response.json();
-    ownerName = responseBody.owner.login;
+    expect(createResponse.status()).toBe(201);
+
+    const createResponseBody = await createResponse.json();
+
+    ownerName = createResponseBody.owner.login;
+
+    const getRepoResponse = await reposHelper.getRepoByName(
+      apiRequest,
+      ownerName,
+      repoName,
+    );
+
+    expect(getRepoResponse.status()).toBe(200);
+
+    const getRepoResponseBody = await getRepoResponse.json();
+
+    expect(getRepoResponseBody.name).toBe(repoName);
+    expect(getRepoResponseBody.full_name).toBe(`${ownerName}/${repoName}`);
+
+    const createFileResponse = await reposHelper.addFileToRepo(
+      apiRequest,
+      ownerName,
+      repoName,
+    );
+
+    expect(createFileResponse.status()).toBe(201);
 
     arr.push(repoName);
   });
@@ -33,6 +57,21 @@ test.describe("GitHub Repository CRUD API tests", () => {
       expect(repo.full_name).toContain("/");
       expect(repo.private).toBeDefined();
     }
+  });
+  test("Get file from repository", async ({ apiRequest }) => {
+    const response = await reposHelper.getFileFromRepo(
+      apiRequest,
+      ownerName,
+      repoName,
+    );
+
+    expect(response.status()).toBe(200);
+
+    const responseBody = await response.json();
+
+    expect(responseBody.name).toBeDefined();
+    expect(responseBody.type).toBe("file");
+    expect(responseBody.name).toContain("tesst.txt");
   });
 
   test("Creater repo via POST /user/repos", async ({ apiRequest }) => {
@@ -52,6 +91,22 @@ test.describe("GitHub Repository CRUD API tests", () => {
     expect(responseBody.private).toBe(false);
   });
 
+  test("Get non-existing repository", async ({ apiRequest }) => {
+    const fakeRepoName = "fake-repo-" + Date.now();
+
+    const response = await reposHelper.getRepoByName(
+      apiRequest,
+      ownerName,
+      fakeRepoName,
+    );
+
+    expect(response.status()).toBe(404);
+
+    const body = await response.json();
+
+    expect(body.message).toBe("Not Found");
+  });
+
   test(`Adding a new file to a repository via PUT /repos/${ownerName}/${repoName}/contents/tesst.txt`, async ({
     apiRequest,
   }) => {
@@ -60,6 +115,7 @@ test.describe("GitHub Repository CRUD API tests", () => {
       ownerName,
       repoName,
     );
+
     expect(response.status()).toBe(201);
 
     const responseBody = await response.json();
@@ -69,6 +125,7 @@ test.describe("GitHub Repository CRUD API tests", () => {
 
   test("Changing a repository name via PATCH", async ({ apiRequest }) => {
     const newRepoName = "updated-api-repo-" + Date.now();
+
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
     const response = await reposHelper.updateRepoName(
@@ -78,9 +135,9 @@ test.describe("GitHub Repository CRUD API tests", () => {
       newRepoName,
     );
 
-    const responseBody = await response.json();
-
     expect(response.status()).toBe(200);
+
+    const responseBody = await response.json();
 
     arr.push(newRepoName);
 
@@ -101,6 +158,7 @@ test.describe("GitHub Repository CRUD API tests", () => {
 
     expect(response.status()).toBe(204);
   });
+
   test.afterAll("Clean-up", async ({ apiRequest }) => {
     for (const name of arr) {
       await reposHelper.deleteRepo(apiRequest, ownerName, name);
