@@ -2,24 +2,15 @@ export default class ReposApiHelper {
   private description: string;
   private privacy: boolean;
   private auto_init: boolean;
-  private message: string;
-  private content: string;
-  private branch: string;
 
   constructor(
     description: string = "Repository created from Playwright",
     privacy: boolean = false,
     auto_init: boolean = true,
-    message: string = "Update test file",
-    content: string = "SGVsbG8gZnJvbSBQb3N0bWFuIQ==",
-    branch: string = "main",
   ) {
     this.description = description;
     this.privacy = privacy;
     this.auto_init = auto_init;
-    this.message = message;
-    this.content = content;
-    this.branch = branch;
   }
   async getUserRepos(request: any) {
     const endpoint = "/user/repos";
@@ -44,27 +35,6 @@ export default class ReposApiHelper {
         description: description,
         private: privacy,
         auto_init: auto_init,
-      },
-    });
-
-    return response;
-  }
-
-  async addFileToRepo(
-    request: any,
-    ownerName: string,
-    repoName: string,
-    message: string = this.message,
-    content: string = this.content,
-    branch: string = this.branch,
-  ) {
-    const endpoint = `https://api.github.com/repos/${ownerName}/${repoName}/contents/tesst.txt`;
-
-    const response = await request.put(endpoint, {
-      data: {
-        message: message,
-        content: content,
-        branch: branch,
       },
     });
 
@@ -97,13 +67,5 @@ export default class ReposApiHelper {
   async getRepoByName(request: any, ownerName: string, repoName: string) {
     const endpoint = `/repos/${ownerName}/${repoName}`;
     return await request.get(endpoint);
-  }
-
-  async getFileFromRepo(request: any, ownerName: string, repoName: string) {
-    const endpoint = `/repos/${ownerName}/${repoName}/contents/tesst.txt`;
-
-    const response = await request.get(endpoint);
-
-    return response;
   }
 }
