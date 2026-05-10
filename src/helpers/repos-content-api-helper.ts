@@ -47,4 +47,25 @@ export default class ReposContentApiHelper {
 
     return response;
   }
+
+  async updateFileRepo(
+    request: any,
+    ownerName: string,
+    repoName: string,
+    fileName: string,
+    sha: string,
+    updatedContent: string,
+    message: string = this.message,
+  ) {
+    const endpoint = `/repos/${ownerName}/${repoName}/contents/${fileName}`;
+
+    const response = await request.put(endpoint, {
+      data: {
+        sha: sha,
+        message: message,
+        content: updatedContent,
+      },
+    });
+    return response;
+  }
 }
