@@ -1,14 +1,14 @@
 import { test, expect } from "../src/fixtures/api-fixture";
 
 import ReposApiHelper from "..//src/helpers/repos-api-helper";
-import ReposContentApiHelper from "..//src/helpers/repos-content-api-helper";
+
+import RetryHelper from "..//src/helpers/retry-helper";
 
 test.describe("GitHub Repository CRUD API tests", () => {
   let repoName: string = "";
   let ownerName: string = "";
 
   const reposHelper = new ReposApiHelper();
-  const ReposContentHelper = new ReposContentApiHelper();
 
   test.beforeEach("Creating a new repository", async ({ apiRequest }) => {
     repoName = "test-api-repo-" + Date.now();
@@ -30,10 +30,10 @@ test.describe("GitHub Repository CRUD API tests", () => {
     const responseBody = await response.json();
 
     for (const repo of responseBody) {
-      expect(repo.id).toBeDefined();
-      expect(repo.name).toBeDefined();
-      expect(repo.full_name).toContain("/");
-      expect(repo.private).toBeDefined();
+      expect.soft(repo.id).toBeDefined();
+      expect.soft(repo.name).toBeDefined();
+      expect.soft(repo.full_name).toContain("/");
+      expect.soft(repo.private).toBeDefined();
     }
   });
 
@@ -87,10 +87,7 @@ test.describe("GitHub Repository CRUD API tests", () => {
 
   test("Changing a repository name via PATCH", async ({ apiRequest }) => {
     const newRepoName = "updated-api-repo-" + Date.now();
-
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-
-    const response = await reposHelper.updateRepoName(
+    const response = await RetryHelper.updateRepoNameWithRetry(
       apiRequest,
       ownerName,
       repoName,
@@ -123,9 +120,7 @@ test.describe("GitHub Repository CRUD API tests", () => {
 
   test.afterEach("Clean-up", async ({ apiRequest }) => {
     if (ownerName && repoName) {
-      await new Promise((resolve) => setTimeout(resolve, 3000));
-
-      await reposHelper.deleteRepo(apiRequest, ownerName, repoName);
+      await RetryHelper.deleteRepoWithRetry(apiRequest, ownerName, repoName);
     }
   });
 });

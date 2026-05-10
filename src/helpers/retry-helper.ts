@@ -1,0 +1,47 @@
+import ReposApiHelper from "./repos-api-helper";
+
+const reposHelper = new ReposApiHelper();
+
+export default class RetryHelper {
+  static async updateRepoNameWithRetry(
+    apiRequest: any,
+    ownerName: string,
+    repoName: string,
+    newRepoName: string,
+  ) {
+    let repoResponse;
+    for (let attempt = 1; attempt <= 10; attempt++) {
+      repoResponse = await reposHelper.updateRepoName(
+        apiRequest,
+        ownerName,
+        repoName,
+        newRepoName,
+      );
+      if (repoResponse.status() === 204) {
+        return;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 250));
+    }
+    return repoResponse;
+  }
+
+  static async deleteRepoWithRetry(
+    apiRequest: any,
+    ownerName: string,
+    repoName: string,
+  ) {
+    let repoResponse;
+    for (let attempt = 1; attempt <= 10; attempt++) {
+      repoResponse = await reposHelper.deleteRepo(
+        apiRequest,
+        ownerName,
+        repoName,
+      );
+      if (repoResponse.status() === 204) {
+        return;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 250));
+    }
+    return repoResponse;
+  }
+}
