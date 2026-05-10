@@ -17,8 +17,8 @@ export default class RetryHelper {
         repoName,
         newRepoName,
       );
-      if (repoResponse.status() === 204) {
-        return;
+      if (repoResponse.status() === 200) {
+        break;
       }
       await new Promise((resolve) => setTimeout(resolve, 250));
     }
@@ -38,7 +38,7 @@ export default class RetryHelper {
         repoName,
       );
       if (repoResponse.status() === 204) {
-        return;
+        break;
       }
       await new Promise((resolve) => setTimeout(resolve, 250));
     }
