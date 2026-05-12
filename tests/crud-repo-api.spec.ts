@@ -37,6 +37,20 @@ test.describe("GitHub Repository CRUD API tests", () => {
     }
   });
 
+  test("Get branch", async ({ apiRequest }) => {
+    const response = await reposHelper.getBranches(
+      apiRequest,
+      ownerName,
+      repoName,
+    );
+
+    expect(response.status()).toBe(200);
+
+    const responseBody = await response.json();
+
+    expect(responseBody[0].name).toBe("main");
+  });
+
   test("Creater repo via POST /user/repos", async ({ apiRequest }) => {
     const newRepoName = "test-api-repo-" + Date.now();
 

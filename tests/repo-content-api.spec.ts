@@ -100,6 +100,34 @@ test.describe("GitHub Repository Content API tests", () => {
     );
     expect(updateFileResponse.status()).toBe(200);
   });
+  test("Delete file", async ({ apiRequest }) => {
+    const response = await ReposContentHelper.addFileToRepo(
+      apiRequest,
+      ownerName,
+      repoName,
+      fileName,
+    );
+    expect(response.status()).toBe(201);
+
+    const fileInfo = await ReposContentHelper.getFileFromRepo(
+      apiRequest,
+      ownerName,
+      repoName,
+      fileName,
+    );
+    expect(fileInfo.status()).toBe(200);
+    const fileInfoBody = await fileInfo.json();
+    const sha = fileInfoBody.sha;
+
+    const deletFile = await ReposContentHelper.deleteFileFromRepo(
+      apiRequest,
+      ownerName,
+      repoName,
+      fileName,
+      sha,
+    );
+    expect(deletFile.status()).toBe(200);
+  });
 
   test.afterEach("Clean-up", async ({ apiRequest }) => {
     if (ownerName && repoName) {

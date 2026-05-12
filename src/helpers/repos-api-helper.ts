@@ -68,4 +68,9 @@ export default class ReposApiHelper {
     const endpoint = `/repos/${ownerName}/${repoName}`;
     return await request.get(endpoint);
   }
+  async getBranches(request: any, ownerName: string, repoName: string) {
+    const endpoint = `https://api.github.com/repos/${ownerName}/${repoName}/branches`;
+    const response = await request.get(endpoint);
+    return response;
+  }
 }
