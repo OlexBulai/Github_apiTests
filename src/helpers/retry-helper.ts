@@ -1,4 +1,5 @@
-import ReposApiHelper from "./repos-api-helper";
+import { APIResponse, expect } from '@playwright/test';
+import ReposApiHelper from './repos-api-helper';
 
 const reposHelper = new ReposApiHelper();
 
@@ -23,6 +24,26 @@ export default class RetryHelper {
       await new Promise((resolve) => setTimeout(resolve, 250));
     }
     return repoResponse;
+  }
+
+  static async waitUntilStatus(
+    requestFunc: () => Promise<APIResponse>,
+    expectedStatus: number = 200,
+    maxAttempts: number = 10,
+    delay: number = 250,
+  ) {
+    let response: APIResponse | undefined;
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      response = await requestFunc();
+      if (response.status() === expectedStatus) {
+        expect(response.status()).toBe(expectedStatus);
+        return response.json();
+      }
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+    throw new Error(
+      `Expected status ${expectedStatus} after ${maxAttempts} attempts, but got ${response?.status()}`,
+    );
   }
 
   static async deleteRepoWithRetry(

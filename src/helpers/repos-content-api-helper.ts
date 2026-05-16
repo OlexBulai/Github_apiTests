@@ -68,4 +68,25 @@ export default class ReposContentApiHelper {
     });
     return response;
   }
+
+  async deleteFileFromRepo(
+    request: any,
+    ownerName: string,
+    repoName: string,
+    fileName: string,
+    sha: string,
+    message: string = this.message,
+    branch: string = this.branch,
+  ) {
+    const endpoint = `/repos/${ownerName}/${repoName}/contents/${fileName}`;
+
+    const response = await request.delete(endpoint, {
+      data: {
+        sha: sha,
+        message: message,
+        branch: branch,
+      },
+    });
+    return response;
+  }
 }
