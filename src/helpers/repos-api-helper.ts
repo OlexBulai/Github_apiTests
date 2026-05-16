@@ -73,4 +73,44 @@ export default class ReposApiHelper {
     const response = await request.get(endpoint);
     return response;
   }
+
+  async createBranch(
+    request: any,
+    ownerName: string,
+    repoName: string,
+    sha: string,
+    ref: string,
+  ) {
+    const endpoint = `https://api.github.com/repos/${ownerName}/${repoName}/git/refs`;
+    const response = await request.post(endpoint, {
+      data: {
+        sha: sha,
+        ref: ref,
+      },
+    });
+    return response;
+  }
+
+  async pullsrequest(
+    request: any,
+    ownerName: string,
+    repoName: string,
+    branchName: string,
+  ) {
+    const endpoint = `https://api.github.com/repos/${ownerName}/${repoName}/pulls`;
+    const response = await request.post(endpoint, {
+      data: {
+        title: "PR for test branch",
+        head: branchName,
+        base: "main",
+      },
+    });
+    return response;
+  }
+
+  async getCommits(request: any, ownerName: string, repoName: string) {
+    const endpoint = `https://api.github.com/repos/${ownerName}/${repoName}/commits`;
+    const response = await request.get(endpoint);
+    return response;
+  }
 }
