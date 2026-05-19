@@ -5,6 +5,9 @@ import ReposApiHelper from "..//src/helpers/repos-api-helper";
 import RetryHelper from "..//src/helpers/retry-helper";
 import PullsApiHelper from "..//src/helpers/repos-PR-helper";
 import ReposContentApiHelper from "..//src/helpers/repos-content-api-helper";
+import * as z from "zod";
+import { repoPermissionsSchema } from "..//src/schemas/pull-request.schema";
+import { repositorySchema } from "..//src/schemas/pull-request.schema";
 
 test.describe("GitHub Repository CRUD API tests", () => {
   let repoName: string = "";
@@ -41,6 +44,7 @@ test.describe("GitHub Repository CRUD API tests", () => {
       expect.soft(repo.full_name).toContain("/");
       expect.soft(repo.private).toBeDefined();
     }
+    expect(responseBody).toMatchSchema(z.array(repositorySchema));
   });
 
   test("Get branch", async ({ apiRequest }) => {
@@ -77,6 +81,7 @@ test.describe("GitHub Repository CRUD API tests", () => {
     expect(response.status()).toBe(201);
 
     const responseBody = await response.json();
+    expect(responseBody).toMatchSchema(repositorySchema);
 
     expect(responseBody.id).toBeDefined();
     expect(responseBody.name).toBe(newRepoName);
@@ -94,6 +99,7 @@ test.describe("GitHub Repository CRUD API tests", () => {
     );
 
     expect(getRepoResponse.status()).toBe(200);
+    expect(responseBody).toMatchSchema(repositorySchema);
 
     const getRepoResponseBody = await getRepoResponse.json();
 

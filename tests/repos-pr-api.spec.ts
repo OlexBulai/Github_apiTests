@@ -76,7 +76,7 @@ test.describe("Pull Request API tests", () => {
     expect(pullsresponse.status()).toBe(201);
   });
 
-  test("Get PR file", async ({ apiRequest }) => {
+  test("Get PR files", async ({ apiRequest }) => {
     const pullsresponse = await reposHelper.pullsrequest(
       apiRequest,
       ownerName,
@@ -99,6 +99,27 @@ test.describe("Pull Request API tests", () => {
     const prFilesBody = await pullrequest.json();
 
     expect(prFilesBody[0].filename).toBe(fileName);
+  });
+
+  test("Get PR", async ({ apiRequest }) => {
+    const pullsresponse = await reposHelper.pullsrequest(
+      apiRequest,
+      ownerName,
+      repoName,
+      branchName,
+    );
+    expect(pullsresponse.status()).toBe(201);
+
+    const pullBody = await pullsresponse.json();
+    pullNumber = pullBody.number;
+
+    const prResponse = await pullHelper.getPr(
+      apiRequest,
+      ownerName,
+      repoName,
+      pullNumber,
+    );
+    expect(prResponse.status()).toBe(200);
   });
 
   test.afterEach("Clean-up", async ({ apiRequest }) => {
