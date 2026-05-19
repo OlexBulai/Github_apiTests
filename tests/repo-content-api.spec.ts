@@ -4,6 +4,10 @@ import ReposApiHelper from "..//src/helpers/repos-api-helper";
 import RetryHelper from "..//src/helpers/retry-helper";
 import { faker } from "@faker-js/faker";
 import { Buffer } from "buffer";
+import { repoPermissionsSchema } from "..//src/schemas/pull-request.schema";
+import { repositorySchema } from "..//src/schemas/pull-request.schema";
+import * as z from "zod";
+import { fileSchema } from "..//src/schemas/pull-request.schema";
 
 test.describe("GitHub Repository Content API tests", () => {
   let repoName: string = "";
@@ -45,6 +49,7 @@ test.describe("GitHub Repository Content API tests", () => {
     expect(response.status()).toBe(200);
 
     const responseBody = await response.json();
+    expect(responseBody).toMatchSchema(fileSchema);
 
     expect(responseBody.name).toBeDefined();
     expect(responseBody.type).toBe("file");
